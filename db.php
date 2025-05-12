@@ -1,8 +1,8 @@
 <?php
-$host = 'db';  // This is the name of the database service in docker-compose
-$db   = 'checkoutdb';
+$host = 'db';  // Docker service name for the database
+$db   = 'checkout';
 $user = 'checkoutuser';
-$pass = 'checkoutpass';
+$pass = 'checkpass';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
