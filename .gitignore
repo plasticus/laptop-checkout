@@ -1,0 +1,35 @@
+# OS-specific junk
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+
+# Node modules (if you add JS tooling later)
+node_modules/
+
+# PHP built-in server files
+*.log
+
+# Composer (if you ever add it)
+vendor/
+composer.lock
+
+# Environment config (if using dotenv)
+.env
+
+# IDE/editor junk
+.vscode/
+*.code-workspace
+
+# Docker volumes or runtime files (if any)
+db_data/
+*.pid
+
+# Backup files
+*.bak
+*.tmp
+*.swp
+
+# Uploaded files (if applicable)
+uploads/
