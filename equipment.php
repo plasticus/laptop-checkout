@@ -3,41 +3,46 @@ require 'db.php';
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = $_POST['id'] ?? '';
-    $asset_tag = $_POST['asset_tag'];
-    $model = $_POST['model'];
-    $serial_number = $_POST['serial_number'];
-    $condition_notes = $_POST['condition_notes'];
+    $equipmentID = $_POST['equipmentID'] ?? '';
+    $name = $_POST['name'];
+    $type = $_POST['type'];
+    $serialNumber = $_POST['serialNumber'];
+    $notes = $_POST['notes'];
 
-    if ($id) {
+    if ($equipmentID) {
         // Update
-        $stmt = $pdo->prepare("UPDATE equipment SET asset_tag=?, model=?, serial_number=?, condition_notes=? WHERE id=?");
-        $stmt->execute([$asset_tag, $model, $serial_number, $condition_notes, $id]);
+        $stmt = $pdo->prepare("UPDATE equipment SET name=?, type=?, serialNumber=?, notes=? WHERE equipmentID=?");
+        $stmt->execute([$name, $type, $serialNumber, $notes, $equipmentID]);
     } else {
         // Insert
-        $stmt = $pdo->prepare("INSERT INTO equipment (asset_tag, model, serial_number, condition_notes) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$asset_tag, $model, $serial_number, $condition_notes]);
+        $stmt = $pdo->prepare("INSERT INTO equipment (name, type, serialNumber, notes) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$name, $type, $serialNumber, $notes]);
     }
 }
 
 // Fetch all equipment
-$rows = $pdo->query("SELECT * FROM equipment ORDER BY id DESC")->fetchAll();
+$rows = $pdo->query("SELECT * FROM equipment ORDER BY equipmentID DESC")->fetchAll();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Equipment Management</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<?php include 'nav.php'; ?>
+
+<div style="padding: 2rem;">
     <h1>Equipment</h1>
 
     <form method="POST">
-        <input type="hidden" name="id" id="id">
-        <label>Asset Tag: <input type="text" name="asset_tag" id="asset_tag" required></label><br>
-        <label>Model: <input type="text" name="model" id="model"></label><br>
-        <label>Serial #: <input type="text" name="serial_number" id="serial_number"></label><br>
-        <label>Condition Notes: <textarea name="condition_notes" id="condition_notes"></textarea></label><br>
+        <input type="hidden" name="equipmentID" id="equipmentID">
+        <label>Name: <input type="text" name="name" id="name" required></label><br>
+        <label>Type: <input type="text" name="type" id="type"></label><br>
+        <label>Serial #: <input type="text" name="serialNumber" id="serialNumber"></label><br>
+        <label>Notes: <textarea name="notes" id="notes"></textarea></label><br>
         <button type="submit">Save</button>
     </form>
 
@@ -46,34 +51,38 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY id DESC")->fetchAll();
     <table border="1" cellpadding="5">
         <tr>
             <th>ID</th>
-            <th>Asset Tag</th>
-            <th>Model</th>
+            <th>Name</th>
+            <th>Type</th>
             <th>Serial #</th>
-            <th>Condition</th>
+            <th>Notes</th>
+            <th>Available?</th>
             <th>Actions</th>
         </tr>
         <?php foreach ($rows as $row): ?>
         <tr>
-            <td><?= htmlspecialchars($row['id']) ?></td>
-            <td><?= htmlspecialchars($row['asset_tag']) ?></td>
-            <td><?= htmlspecialchars($row['model']) ?></td>
-            <td><?= htmlspecialchars($row['serial_number']) ?></td>
-            <td><?= htmlspecialchars($row['condition_notes']) ?></td>
+            <td><?= htmlspecialchars($row['equipmentID']) ?></td>
+            <td><?= htmlspecialchars($row['name']) ?></td>
+            <td><?= htmlspecialchars($row['type']) ?></td>
+            <td><?= htmlspecialchars($row['serialNumber']) ?></td>
+            <td><?= htmlspecialchars($row['notes']) ?></td>
+            <td><?= $row['available'] ? 'Yes' : 'No' ?></td>
             <td>
                 <button onclick="editRow(<?= htmlspecialchars(json_encode($row)) ?>)">Edit</button>
             </td>
         </tr>
         <?php endforeach; ?>
     </table>
+</div>
 
-    <script>
-        function editRow(row) {
-            document.getElementById('id').value = row.id;
-            document.getElementById('asset_tag').value = row.asset_tag;
-            document.getElementById('model').value = row.model;
-            document.getElementById('serial_number').value = row.serial_number;
-            document.getElementById('condition_notes').value = row.condition_notes;
-        }
-    </script>
+<script>
+    function editRow(row) {
+        document.getElementById('equipmentID').value = row.equipmentID;
+        document.getElementById('name').value = row.name;
+        document.getElementById('type').value = row.type;
+        document.getElementById('serialNumber').value = row.serialNumber;
+        document.getElementById('notes').value = row.notes;
+    }
+</script>
+
 </body>
 </html>
