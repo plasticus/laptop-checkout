@@ -1,5 +1,6 @@
 <?php
 require 'db.php';
+include 'nav.php';
 
 // Handle deletion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteID'])) {
@@ -16,13 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && !isset($_P
     $serialNumber = $_POST['serialNumber'];
     $notes = $_POST['notes'];
     $neroScore = isset($_POST['neroScore']) && $_POST['neroScore'] !== '' ? (int)$_POST['neroScore'] : null;
+    $operatingSystem = $_POST['operatingSystem'] ?? null;
 
     if ($equipmentID) {
-        $stmt = $pdo->prepare("UPDATE equipment SET name=?, type=?, serialNumber=?, notes=?, neroScore=? WHERE equipmentID=?");
-        $stmt->execute([$name, $type, $serialNumber, $notes, $neroScore, $equipmentID]);
+        $stmt = $pdo->prepare("UPDATE equipment SET name=?, type=?, serialNumber=?, notes=?, neroScore=?, operatingSystem=? WHERE equipmentID=?");
+        $stmt->execute([$name, $type, $serialNumber, $notes, $neroScore, $operatingSystem, $equipmentID]);
     } else {
-        $stmt = $pdo->prepare("INSERT INTO equipment (name, type, serialNumber, notes, neroScore) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$name, $type, $serialNumber, $notes, $neroScore]);
+        $stmt = $pdo->prepare("INSERT INTO equipment (name, type, serialNumber, notes, neroScore, operatingSystem) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$name, $type, $serialNumber, $notes, $neroScore, $operatingSystem]);
     }
 }
 
@@ -37,8 +39,6 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
 </head>
 <body>
 
-<?php include 'nav.php'; ?>
-
 <div style="padding: 2rem;">
     <h1>Equipment</h1>
 
@@ -49,6 +49,7 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
             <th>Serial #</th>
             <th>Notes</th>
             <th>Nero Score</th>
+            <th>OS</th>
             <th>Available?</th>
             <th>Actions</th>
         </tr>
@@ -59,6 +60,7 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
             <td><?= htmlspecialchars($row['serialNumber'] ?? '') ?></td>
             <td><?= htmlspecialchars($row['notes'] ?? '') ?></td>
             <td><?= htmlspecialchars($row['neroScore'] ?? '') ?></td>
+            <td><?= htmlspecialchars($row['operatingSystem'] ?? '') ?></td>
             <td><?= ($row['available'] ?? true) ? 'Yes' : 'No' ?></td>
             <td>
                 <button class="button-small button-edit" onclick="editRow(<?= htmlspecialchars(json_encode($row)) ?>)">Edit</button>
@@ -80,6 +82,7 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
             <label>Serial #: <input type="text" name="serialNumber" id="serialNumber"></label><br>
             <label>Notes: <textarea name="notes" id="notes"></textarea></label><br>
             <label>Nero Score: <input type="number" name="neroScore" id="neroScore" min="0" max="99999"></label><br>
+            <label>Operating System: <input type="text" name="operatingSystem" id="operatingSystem"></label><br>
             <button type="submit" class="button-small button-save">Save</button>
         </form>
     </div>
@@ -93,6 +96,7 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
         document.getElementById('serialNumber').value = row.serialNumber ?? '';
         document.getElementById('notes').value = row.notes ?? '';
         document.getElementById('neroScore').value = row.neroScore ?? '';
+        document.getElementById('operatingSystem').value = row.operatingSystem ?? '';
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 </script>
