@@ -15,7 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && !isset($_P
     $type = $_POST['type'];
     $serialNumber = $_POST['serialNumber'];
     $notes = $_POST['notes'];
-    $neroScore = $_POST['neroScore'] ?? null;
+    $neroScore = isset($_POST['neroScore']) && $_POST['neroScore'] !== '' ? (int)$_POST['neroScore'] : null;
+
 
     if ($equipmentID) {
         $stmt = $pdo->prepare("UPDATE equipment SET name=?, type=?, serialNumber=?, notes=?, neroScore=? WHERE equipmentID=?");
