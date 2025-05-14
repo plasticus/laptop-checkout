@@ -1,6 +1,5 @@
 <?php
 require 'db.php';
-require 'nav.php';
 
 // Handle deletion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteID'])) {
