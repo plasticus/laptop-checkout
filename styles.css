@@ -84,3 +84,42 @@ label {
     display: block;
     margin: 0.5rem 0;
 }
+.container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+tr.available {
+    background-color: #e6ffe6;
+}
+
+tr.checked-out {
+    background-color: #ffe6e6;
+}
+
+.button {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.button.disabled {
+    background-color: #999;
+    pointer-events: none;
+}
