@@ -108,15 +108,15 @@ tr.checked-out {
     background-color: #218838;
 }
 
-/* Delete = soft red */
+/* Delete = bold red */
 .button-delete {
-    background-color: #f8d7da;
-    color: #721c24 !important;
-    border: 1px solid #f5c6cb;
+    background-color: #dc3545;  /* Bootstrap-style red */
+    color: white;
+    border: none;
 }
 
 .button-delete:hover {
-    background-color: #f1b0b7;
+    background-color: #bd2130;
 }
 
 /* Save = blue */
