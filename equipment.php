@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && !isset($_P
     }
 }
 
+// Fetch all equipment, sorted by name
 $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
 ?>
 
@@ -66,12 +67,12 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
         </tr>
         <?php foreach ($rows as $row): ?>
         <tr>
-            <td><?= htmlspecialchars($row['name']) ?></td>
-            <td><?= htmlspecialchars($row['type']) ?></td>
-            <td><?= htmlspecialchars($row['serialNumber']) ?></td>
-            <td><?= htmlspecialchars($row['notes']) ?></td>
-            <td><?= htmlspecialchars($row['neroScore']) ?></td>
-            <td><?= $row['available'] ? 'Yes' : 'No' ?></td>
+            <td><?= htmlspecialchars($row['name'] ?? '') ?></td>
+            <td><?= htmlspecialchars($row['type'] ?? '') ?></td>
+            <td><?= htmlspecialchars($row['serialNumber'] ?? '') ?></td>
+            <td><?= htmlspecialchars($row['notes'] ?? '') ?></td>
+            <td><?= htmlspecialchars($row['neroScore'] ?? '') ?></td>
+            <td><?= ($row['available'] ?? true) ? 'Yes' : 'No' ?></td>
             <td>
                 <button class="button-small" onclick="editRow(<?= htmlspecialchars(json_encode($row)) ?>)">Edit</button>
                 <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this record?');">
@@ -87,11 +88,11 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
 <script>
     function editRow(row) {
         document.getElementById('equipmentID').value = row.equipmentID;
-        document.getElementById('name').value = row.name;
-        document.getElementById('type').value = row.type;
-        document.getElementById('serialNumber').value = row.serialNumber;
-        document.getElementById('notes').value = row.notes;
-        document.getElementById('neroScore').value = row.neroScore;
+        document.getElementById('name').value = row.name ?? '';
+        document.getElementById('type').value = row.type ?? '';
+        document.getElementById('serialNumber').value = row.serialNumber ?? '';
+        document.getElementById('notes').value = row.notes ?? '';
+        document.getElementById('neroScore').value = row.neroScore ?? '';
     }
 </script>
 
