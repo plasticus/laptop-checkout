@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && !isset($_P
     $notes = $_POST['notes'];
     $neroScore = isset($_POST['neroScore']) && $_POST['neroScore'] !== '' ? (int)$_POST['neroScore'] : null;
 
-
     if ($equipmentID) {
         $stmt = $pdo->prepare("UPDATE equipment SET name=?, type=?, serialNumber=?, notes=?, neroScore=? WHERE equipmentID=?");
         $stmt->execute([$name, $type, $serialNumber, $notes, $neroScore, $equipmentID]);
@@ -51,7 +50,7 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
         <label>Serial #: <input type="text" name="serialNumber" id="serialNumber"></label><br>
         <label>Notes: <textarea name="notes" id="notes"></textarea></label><br>
         <label>Nero Score: <input type="number" name="neroScore" id="neroScore" min="0" max="99999"></label><br>
-        <button type="submit" class="button-small">Save</button>
+        <button type="submit" class="button-small button-save">Save</button>
     </form>
 
     <hr>
@@ -75,7 +74,7 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
             <td><?= htmlspecialchars($row['neroScore'] ?? '') ?></td>
             <td><?= ($row['available'] ?? true) ? 'Yes' : 'No' ?></td>
             <td>
-                <button class="button-small" onclick="editRow(<?= htmlspecialchars(json_encode($row)) ?>)">Edit</button>
+                <button class="button-small button-edit" onclick="editRow(<?= htmlspecialchars(json_encode($row)) ?>)">Edit</button>
                 <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this record?');">
                     <input type="hidden" name="deleteID" value="<?= $row['equipmentID'] ?>">
                     <button type="submit" class="button-small button-delete">Delete</button>
