@@ -1,8 +1,15 @@
 <?php
 require 'db.php';
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Handle deletion
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteID'])) {
+    $deleteID = $_POST['deleteID'];
+    $stmt = $pdo->prepare("DELETE FROM equipment WHERE equipmentID = ?");
+    $stmt->execute([$deleteID]);
+}
+
+// Handle add/update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name']) && !isset($_POST['deleteID'])) {
     $equipmentID = $_POST['equipmentID'] ?? '';
     $name = $_POST['name'];
     $type = $_POST['type'];
@@ -11,17 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $neroScore = $_POST['neroScore'] ?? null;
 
     if ($equipmentID) {
-        // Update
         $stmt = $pdo->prepare("UPDATE equipment SET name=?, type=?, serialNumber=?, notes=?, neroScore=? WHERE equipmentID=?");
         $stmt->execute([$name, $type, $serialNumber, $notes, $neroScore, $equipmentID]);
     } else {
-        // Insert
         $stmt = $pdo->prepare("INSERT INTO equipment (name, type, serialNumber, notes, neroScore) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([$name, $type, $serialNumber, $notes, $neroScore]);
     }
 }
 
-// Fetch all equipment, sorted by name
 $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
 ?>
 
@@ -45,12 +49,12 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
         <label>Serial #: <input type="text" name="serialNumber" id="serialNumber"></label><br>
         <label>Notes: <textarea name="notes" id="notes"></textarea></label><br>
         <label>Nero Score: <input type="number" name="neroScore" id="neroScore" min="0" max="99999"></label><br>
-        <button type="submit">Save</button>
+        <button type="submit" class="button-small">Save</button>
     </form>
 
     <hr>
 
-    <table border="1" cellpadding="5">
+    <table>
         <tr>
             <th>Name</th>
             <th>Type</th>
@@ -69,7 +73,11 @@ $rows = $pdo->query("SELECT * FROM equipment ORDER BY name ASC")->fetchAll();
             <td><?= htmlspecialchars($row['neroScore']) ?></td>
             <td><?= $row['available'] ? 'Yes' : 'No' ?></td>
             <td>
-                <button onclick="editRow(<?= htmlspecialchars(json_encode($row)) ?>)">Edit</button>
+                <button class="button-small" onclick="editRow(<?= htmlspecialchars(json_encode($row)) ?>)">Edit</button>
+                <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this record?');">
+                    <input type="hidden" name="deleteID" value="<?= $row['equipmentID'] ?>">
+                    <button type="submit" class="button-small button-delete">Delete</button>
+                </form>
             </td>
         </tr>
         <?php endforeach; ?>
