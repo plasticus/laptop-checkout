@@ -40,6 +40,47 @@ body {
     text-decoration: underline;
 }
 
+/* Basic nav layout */
+.navbar {
+    background-color: #002244;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+.navbar .logo {
+    height: 50px;
+    width: auto;
+    margin-right: 1rem;
+}
+
+.navbar nav {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Responsive: stack links on small screens */
+@media (max-width: 600px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar nav {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    .navbar nav a {
+        display: block;
+        width: 100%;
+    }
+}
+
+
 /* Table styling */
 table {
     width: 100%;
