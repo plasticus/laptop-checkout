@@ -1,27 +1,22 @@
 <?php
 require 'db.php';
+require 'nav.php';
 
-$equipmentID = $_GET['id'] ?? null;
-if (!$equipmentID) {
-    echo "No equipment ID specified.";
-    exit;
-}
+// Get all equipment
+$stmt = $pdo->query("
+    SELECT e.*, 
+           (SELECT COUNT(*) FROM checkouts c WHERE c.equipmentID = e.equipmentID AND c.returnDate IS NULL) AS is_checked_out
+    FROM equipment e
+    ORDER BY e.name ASC
+");
+$equipmentList = $stmt->fetchAll();
 
-// Fetch equipment
-$stmt = $pdo->prepare("SELECT * FROM equipment WHERE id = ?");
-$stmt->execute([$equipmentID]);
-$equipment = $stmt->fetch();
-if (!$equipment) {
-    echo "Equipment not found.";
-    exit;
-}
-
-// Dates
+// Date setup
 $today = new DateTime();
-$nextBusinessDay = clone $today;
+$returnDate = clone $today;
 do {
-    $nextBusinessDay->modify('+1 day');
-} while (in_array($nextBusinessDay->format('N'), [6, 7])); // Skip Sat/Sun
+    $returnDate->modify('+1 day');
+} while (in_array($returnDate->format('N'), [6, 7])); // Skip weekends
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,31 +27,49 @@ do {
 </head>
 <body>
     <?php include 'nav.php'; ?>
-
     <div class="container">
         <h2>Checkout Equipment</h2>
 
-        <div class="equipment-info">
-            <p><strong>Tag:</strong> <?= htmlspecialchars($equipment['tag']) ?></p>
-            <p><strong>Model:</strong> <?= htmlspecialchars($equipment['model']) ?></p>
-            <p><strong>Serial:</strong> <?= htmlspecialchars($equipment['serial']) ?></p>
-            <p><strong>Notes:</strong> <?= htmlspecialchars($equipment['notes']) ?></p>
-        </div>
-
-        <form action="checkout-save.php" method="POST">
-            <input type="hidden" name="equipment_id" value="<?= $equipment['id'] ?>">
-
-            <label for="staff_name">Staff Name:</label>
-            <input type="text" id="staff_name" name="staff_name" required>
-
-            <label for="checkout_date">Checkout Date:</label>
-            <input type="date" id="checkout_date" name="checkout_date" value="<?= $today->format('Y-m-d') ?>" readonly>
-
-            <label for="return_date">Anticipated Return Date:</label>
-            <input type="date" id="return_date" name="return_date" value="<?= $nextBusinessDay->format('Y-m-d') ?>" required>
-
-            <button type="submit">Submit Checkout</button>
-        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Serial</th>
+                    <th>Status</th>
+                    <th>Staff</th>
+                    <th>Return Date</th>
+                    <th>Checkout</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($equipmentList as $eq): ?>
+                    <tr class="<?= $eq['is_checked_out'] ? 'checked-out' : 'available' ?>">
+                        <td><?= htmlspecialchars($eq['name']) ?></td>
+                        <td><?= htmlspecialchars($eq['type']) ?></td>
+                        <td><?= htmlspecialchars($eq['serialNumber']) ?></td>
+                        <td><?= $eq['is_checked_out'] ? 'Checked Out' : 'Available' ?></td>
+                        <td>
+                            <?php if (!$eq['is_checked_out']): ?>
+                                <form action="checkout-save.php" method="POST" style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <input type="hidden" name="equipment_id" value="<?= $eq['equipmentID'] ?>">
+                                    <input type="hidden" name="checkout_date" value="<?= $today->format('Y-m-d H:i:s') ?>">
+                                    <input type="text" name="staff_name" placeholder="e.g. Scotty" required>
+                        </td>
+                        <td>
+                                    <input type="date" name="return_date" value="<?= $returnDate->format('Y-m-d') ?>" required>
+                        </td>
+                        <td>
+                                    <button type="submit" class="button">Check Out</button>
+                                </form>
+                            <?php else: ?>
+                                <span class="button disabled">N/A</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
