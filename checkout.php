@@ -1,6 +1,5 @@
 <?php
 require 'db.php';
-require 'nav.php';
 
 // Get all equipment
 $stmt = $pdo->query("
